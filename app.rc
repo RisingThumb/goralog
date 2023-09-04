@@ -1,0 +1,64 @@
+fn conf_enable_goralog {
+    enable_goralog=yes
+    conf_enable_app goralog
+}
+
+fn goralog_init {
+    if (! ~ $#enable_goralog 0 ) {
+        fn dir_listing_handler {
+            d=`{basename -d $1}
+            if(~ $#d 0)
+                d='/'
+            get_sorted_stuffs_from_directory 
+            stats=$#sortedStuffs
+            echo '<div style="text-align:right;">(<a href="index.rss">RSS Feed</a>)</div><h1 class="goralog-dir-list-title">'Blog'</h1><p>Proudly featuring '$stats' blog posts!</p><ul class="goralog-dir-list">'
+ifs='|'
+            # Have a think about how to do this WITHOUT N echo fork calls.
+            # AWK ???
+            for (stuff in $sortedStuffs) {
+                s=`{echo $stuff}
+                echo '<li class="goralog-article-box"><div class="goralog-date">'$s(1)'</div><div class="goralog-title"><a href='$s(3)'>'$s(2)'</a></div><div class="goralog-article-description">'$s(4)'</div></li>';
+            }
+ifs=$oldifs
+            echo '</ul>'
+        }
+    }
+    # Not smart. Only matches against end of url. Technically a blog post/index.rss matches too
+    # Maybe should match against top level?
+    # Maybe shouldn't. Can symbolically link documents into category folders and generic index.rss this way for categories
+    if (~ $req_path */index.rss) {
+        goralog_setup_feed_handlers rss20.tpl 'text/xml; charset=utf-8'
+    }
+}
+
+fn get_sorted_stuffs_from_directory {
+    files=`{ls -F $dir_listing_ls_opts $sitedir$d/. | grep '\[*]*(md|/)$' | sed $dirfilter$dirclean's:/$::'}
+    # Have to make N calls to load metadata. Inefficient. Is there a better way?
+newStuffs='
+'
+    for (file in $files) {
+        metadata=`{get_metadata_from_file $file}
+        newStuffs=($newStuffs $metadata '
+')
+    }
+     oldifs=$ifs;
+     ifs='
+';
+     sortedStuffs=`{echo $newStuffs | sort -k 1.1,1.4 -k 1.5,1.6 -k 1.7,1.8 -r}
+     ifs=$oldifs;
+}
+
+fn goralog_setup_feed_handlers {
+    handler_body_main=NOT_USED
+    res_tail=()
+    http_content_type=$2
+    headers=()
+    master_template=apps/goralog/$1
+}
+
+fn get_metadata_from_file {
+    filename=`{basename $1}
+    . $1.md.meta
+    metadata=($"date^'|'^$"title^'|'^$"filename^'|'^$"description^'|'^$1.md'|');
+    echo $metadata
+}
