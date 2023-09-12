@@ -21,7 +21,7 @@ get_sorted_stuffs_from_directory
         ifs='|'
         firstLine=`{echo $sortedStuffs(1) | awk '{$1=$1;print}'};
         line=$firstLine(1)
-        lbd=`{/usr/bin/date -d $line}
+        lbd=`{/usr/bin/date -R -d $line}
 %}
         <lastBuildDate>%($lbd%)</lastBuildDate>
 %{
@@ -29,18 +29,18 @@ get_sorted_stuffs_from_directory
         for (stuff in $sortedStuffs) {
             ifs='|'
             s=`{echo $stuff | awk '{$1=$1;print}'};
-            newdate=`{/usr/bin/date -d $s(1)}
+            newdate=`{/usr/bin/date -R -d $s(1)}
             title=$s(2)
             link=$s(3)
             description=`{cat $s(5) | $formatter }
 %}
         <item>
             <title>%($title%)</title>
-            <author>risingthumb@risingthumb.xyz</author>
+            <author>risingthumb@risingthumb.xyz (Aaron Leonard)</author>
             <link>https://risingthumb.xyz/Writing/Blog/%($link%)</link>
             <guid isPermaLink="true">https://risingthumb.xyz/Writing/Blog/%($link%)</guid>
             <pubDate>%($newdate%)</pubDate>
-            <description><![CDATA[%($description%)]]></description>
+            <description><![CDATA[<html><head></head><body>%($description%)</body></html>]]></description>
         </item>
 %{
 
