@@ -1,0 +1,5 @@
+% thisFile=`{basename $req_path}
+% . $sitedir$req_path.md.meta
+% mailtoTitle=`{echo $"title}
+<a class="goralog-email-feedback" target="_blank" rel="noopener" href="mailto:risingthumb@risingthumb.xyz?subject=Feedback%20about%20%22%($mailtoTitle%)%22&body=Could%20you%20score%20this%20from%201-10%20on%20how%20satisfied%20you%20were%20after%20reading%20it%3F%0D%0A%0D%0ADon't%20be%20afraid%20to%20give%20me%20a%20low%20score.%20The%20more%20people%20tell%20me%20this%20isn't%20good%20yet%2C%20the%20better%20I%20can%20get%20with%20their%20feedback!%0D%0A%0D%0AAlso%2C%20feel%20free%20to%20point%20out%20any%20problems%20and%20suggest%20ideal%20fixes!%20This%20includes%20sources%2C%20grammar%2C%20spelling%20issues%2C%20addendums%2C%20e.t.c.%0D%0A%0D%0ALogic%20-%20What%20didn't%20you%20agree%20with%3F%0D%0AClarity%20-%20What%20was%20unclear%3F%0D%0AInterest%20-%20What%20bored%20you%3F%0D%0ABrevity%20-%20What%20unnecessary%20things%20should%20be%20removed%3F%0D%0AExpansion%20-%20What%20unanswered%20questions%20were%20you%20left%20with%3F%0D%0A--%0D%0ASignature">Email your feedback about "%($"title%)"</a>
+<p class="goralog-publish-date">Published on %($"date%)</p>

@@ -3,11 +3,16 @@ fn conf_enable_goralog {
     conf_enable_app goralog
     if(~ $"conf_blog_editors '')
         conf_blog_editors=blog-editors
+    if(~ $"conf_blog_title '')
+        conf_blog_title='Blog'
 }
 
 fn goralog_init {
     if (! ~ $#enable_goralog 0 ) {
         dirUsed=`{basename -d $req_path}
+        if (! ~ $dirUsed */ && ~ $#conf_blog_email_included 0) {
+            ll_add handlers_body_foot template apps/goralog/foot.tpl
+        }
         if (~ $#dirUsed 0)
             dirUsed='/'
         if (check_user $conf_blog_editors) {
@@ -29,7 +34,7 @@ fn goralog_init {
                 d='/'
             get_sorted_stuffs_from_directory 
             stats=$#sortedStuffs
-            echo '<div style="text-align:right;">(<a href="index.rss">RSS Feed</a>)</div><h1 class="goralog-dir-list-title">'Blog'</h1><p>Proudly featuring '$stats' blog posts!</p><ul class="goralog-dir-list">'
+            echo '<div style="text-align:right;">(<a href="index.rss">RSS Feed</a>)</div><h1 class="goralog-dir-list-title">'$"conf_blog_title'</h1><p>Proudly featuring '$stats' posts!</p><ul class="goralog-dir-list">'
 ifs='|'
             # Have a think about how to do this WITHOUT N echo fork calls.
             # AWK ???
