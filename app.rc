@@ -81,12 +81,12 @@ fn goralog_setup_feed_handlers {
 
 fn mkbpost {
     bptext=$1;
-    bpdate=$2;
-    bptitle=$3;
-    bpdescription=$4;
+    bpdate=`{echo $2 | sed 's/''/''''/g'};
+    bptitle=`{echo $3 | sed 's/''/''''/g'};
+    bpdescription=`{echo $4 | sed 's/''/''''/g'};
 
     # Need to clean filename of bad chars
-    bpfilename=$5;
+    bpfilename=`{echo $5 | sed 's:/:_:g' | sed 's:\0:_:g'};
 
     if (~ $"bptext '')
        _status=($_status 'You need to provide a post body.')
@@ -96,16 +96,27 @@ fn mkbpost {
        _status=($_status 'You need to provide a post description')
     if (~ $"bpfilename '')
        _status=($_status 'You need to provide a filename')
+    switch($"bpfilename){
+    case .
+       _status=($_status 'Illegal filename')
+    case ..
+       _status=($_status 'Illegal filename')
+    case ...
+       _status=($_status 'Illegal filename')
+    case ....
+       _status=($_status 'Illegal filename')
+    }
     if (test -f $sitedir$dirUsed/$"bpfilename || test -f $sitedir$dirUsed/$"bpfilename.meta)
        _status=($_status 'This filename has been used before, use a different one!')
     if (! ~ $"bpdate [0-9][0-9][0-9][0-9]/[0-9][0-9]/[0-9][0-9]) {
        _status=($_status 'Invalid date. Check format. '^$bpdate)
     }
+    bpfilename=$bpfilename.md
     if (~ $#_status 0) {
-        echo $"bptext > $sitedir$dirUsed/$"bpfilename
-        echo 'title='''$"bptitle'''' > $sitedir$dirUsed/$"bpfilename.meta
-        echo 'date='''$"bpdate'''' >> $sitedir$dirUsed/$"bpfilename.meta
-        echo 'description='''$"bpdescription'''' >> $sitedir$dirUsed/$"bpfilename.meta
+        echo $bptext > $sitedir$dirUsed/$bpfilename
+        echo 'title='''$bptitle'''' > $sitedir$dirUsed/$"bpfilename.meta
+        echo 'date='''$bpdate'''' >> $sitedir$dirUsed/$"bpfilename.meta
+        echo 'description='''$bpdescription'''' >> $sitedir$dirUsed/$"bpfilename.meta
 # Need to sort out creating the files
     }
     status=$_status
