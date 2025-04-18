@@ -126,5 +126,7 @@ fn get_metadata_from_file {
     filename=`{basename $1}
     . $1.md.meta
     metadata=($"date^'|'^$"title^'|'^$"filename^'|'^$"description^'|'^$1.md'|');
+    #set_metadata title $title $1.md
+    #set_metadata description $description $1.md
     echo $metadata
 }
