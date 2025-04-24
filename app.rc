@@ -106,27 +106,40 @@ fn mkbpost {
     case ....
        _status=($_status 'Illegal filename')
     }
-    if (test -f $sitedir$dirUsed/$"bpfilename || test -f $sitedir$dirUsed/$"bpfilename.meta)
+    if (test -f $sitedir$dirUsed/$"bpfilename)
        _status=($_status 'This filename has been used before, use a different one!')
     if (! ~ $"bpdate [0-9][0-9][0-9][0-9]/[0-9][0-9]/[0-9][0-9]) {
        _status=($_status 'Invalid date. Check format. '^$bpdate)
     }
     bpfilename=$bpfilename.md
     if (~ $#_status 0) {
-        echo $bptext > $sitedir$dirUsed/$bpfilename
-        echo 'title='''$bptitle'''' > $sitedir$dirUsed/$"bpfilename.meta
-        echo 'date='''$bpdate'''' >> $sitedir$dirUsed/$"bpfilename.meta
-        echo 'description='''$bpdescription'''' >> $sitedir$dirUsed/$"bpfilename.meta
+        echo '<!---METADATA
+title='^$bptitle^'
+date='^$bpdate^'
+description='^$bpdescription^'
+--->
+'^$bptext > $sitedir$dirUsed/$bpfilename
+        prepare_metadata $sitedir$dirUsed/$bpfilename
 # Need to sort out creating the files
     }
     status=$_status
 }
 
 fn get_metadata_from_file {
+    # If you want to convert from the previous version to the new version...
+    # Uncomment the 5 lines for the .meta files up to prepare_metadata
+    # You should then remove these 5 lines because they are a little bit slow...
+
     filename=`{basename $1}
-    . $1.md.meta
-    metadata=($"date^'|'^$"title^'|'^$"filename^'|'^$"description^'|'^$1.md'|');
+    #. $1.md.meta
     #set_metadata title $title $1.md
     #set_metadata description $description $1.md
+    #set_metadata date $date $1.md
+    #prepare_metadata $1.md
+
+    date=`{get_metadata date $1.md};
+    title=`{get_metadata title $1.md};
+    description=`{get_metadata description $1.md};
+    metadata=($date^'|'^$title^'|'^$filename^'|'^$description^'|'^$1.md'|');
     echo $metadata
 }
