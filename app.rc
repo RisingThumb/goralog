@@ -17,7 +17,7 @@ fn goralog_init {
             dirUsed='/'
         if (check_user $conf_blog_editors) {
             editor_mode=on
-            ll_add handlers_bar_left echo '<a href="'$dirUsed'/new_post">Make a new post</a>'
+            ll_addh handlers_bar_left echo '<a href="'$dirUsed'/new_post">Make a new post</a>'
         }
         if (~ $req_path $dirUsed^'/new_post' && ! ~ $#editor_mode 0) {
             handler_body_main=( tpl_handler `{get_lib_file goralog/new_post.tpl apps/goralog/new_post.tpl} )
