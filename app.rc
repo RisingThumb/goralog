@@ -32,11 +32,11 @@ fn goralog_init {
             d=`{basename -d $1}
             if(~ $#d 0)
                 d='/'
-            get_sorted_stuffs_from_directory 
+            #get_sorted_stuffs_from_directory 
             recexpr='goralog_base_dir = '''^$dirUsed^''''
             stats=`{recsel -t Metadata -e $recexpr -c $metadatadb}
             echo '<div style="text-align:right;">(<a href="index.rss">RSS Feed</a>)</div><h1 class="goralog-dir-list-title">'$"conf_blog_title'</h1><p>Proudly featuring '$stats' posts!</p><ul class="goralog-dir-list">'
-            a=`{recsel -t Metadata -e $recexpr -S date -p description,title,filename,date $metadatadb | tac | sed 's|sites/|https://|g;s|.md||g;s|.tpl||g;s|.html||g' | recfmt -f sites/risingthumb.xyz/Tech/Testing/template.templ}
+            a=`{recsel -t Metadata -e $recexpr -S date -p description,title,filename,date $metadatadb | tac | sed 's|sites/|https://|g;s|.md||g;s|.tpl||g;s|.html||g' | recfmt -f apps/goralog/template.templ}
             echo $a;
             echo '</ul>'
         }
