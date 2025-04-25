@@ -33,16 +33,11 @@ fn goralog_init {
             if(~ $#d 0)
                 d='/'
             get_sorted_stuffs_from_directory 
-            stats=$#sortedStuffs
+            recexpr='goralog_base_dir = '''^$dirUsed^''''
+            stats=`{recsel -t Metadata -e $recexpr -c $metadatadb}
             echo '<div style="text-align:right;">(<a href="index.rss">RSS Feed</a>)</div><h1 class="goralog-dir-list-title">'$"conf_blog_title'</h1><p>Proudly featuring '$stats' posts!</p><ul class="goralog-dir-list">'
-ifs='|'
-            # Have a think about how to do this WITHOUT N echo fork calls.
-            # AWK ???
-            for (stuff in $sortedStuffs) {
-                s=`{echo $stuff}
-                echo '<li class="goralog-article-box"><div class="goralog-date">'$s(1)'</div><div class="goralog-title"><a href='$s(3)'>'$s(2)'</a></div><div class="goralog-article-description">'$s(4)'</div></li>';
-            }
-ifs=$oldifs
+            a=`{recsel -t Metadata -e $recexpr -S date -p description,title,filename,date $metadatadb | tac | sed 's|sites/|https://|g;s|.md||g;s|.tpl||g;s|.html||g' | recfmt -f sites/risingthumb.xyz/Tech/Testing/template.templ}
+            echo $a;
             echo '</ul>'
         }
     }
@@ -132,14 +127,16 @@ fn get_metadata_from_file {
 
     filename=`{basename $1}
     #. $1.md.meta
-    #set_metadata title $title $1.md
-    #set_metadata description $description $1.md
-    #set_metadata date $date $1.md
+    #a=`{prepare_metadata $1.md}
+    #a=`{set_metadata title $"title $1.md}
+    #a=`{set_metadata description $"description $1.md}
+    #a=`{set_metadata date $"date $1.md}
+    #a=`{set_metadata goralog_base_dir $"dirUsed $1.md}
     #prepare_metadata $1.md
 
     date=`{get_metadata date $1.md};
     title=`{get_metadata title $1.md};
     description=`{get_metadata description $1.md};
-    metadata=($date^'|'^$title^'|'^$filename^'|'^$description^'|'^$1.md'|');
+    metadata=($"date^'|'^$"title^'|'^$filename^'|'^$"description^'|'^$1.md'|');
     echo $metadata
 }
