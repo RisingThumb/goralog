@@ -112,6 +112,7 @@ fn mkbpost {
 title='^$bptitle^'
 date='^$bpdate^'
 description='^$bpdescription^'
+goralog_base_dir='^$dirUsed^'
 --->
 '^$bptext > $sitedir$dirUsed/$bpfilename
         prepare_metadata $sitedir$dirUsed/$bpfilename
