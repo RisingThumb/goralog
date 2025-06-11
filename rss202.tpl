@@ -5,12 +5,11 @@ d=`{basename -d $req_path}
 if (~ $#d 0)
     d='/'
 
-get_sorted_stuffs_from_directory
 dirUsed=`{basename -d $req_path};
 recexpr='goralog_base_dir = '''^$dirUsed^''''
+filenames=`{recsel -t Metadata -e $recexpr -S date -P filename $metadatadb | tac}
+lbddate=`{recsel -t Metadata -e $recexpr -S date -P date $metadatadb | tac | head -n 1}
 %}
-
-
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
         <atom:link href="%($base_url^$req_path%)" rel="self" type="application/rss+xml" />
@@ -20,34 +19,29 @@ recexpr='goralog_base_dir = '''^$dirUsed^''''
         <language>en-us</language>
         <generator>Tom Duff's rc, Kris Maglione's, and RisingThumb's goralog werc hackery</generator>
 %{
-        ifs='|'
-        firstLine=`{echo $sortedStuffs(1) | awk '{$1=$1;print}'};
-        line=$firstLine(1)
-        lbd=`{/usr/bin/date -R -d $line}
+        lbd=`{/usr/bin/date -R -d $lbddate}
 %}
         <lastBuildDate>%($lbd%)</lastBuildDate>
 %{
-        ifs='|'
-        for (stuff in $sortedStuffs) {
-            ifs='|'
-            s=`{echo $stuff | awk '{$1=$1;print}'};
-            newdate=`{/usr/bin/date -R -d $s(1)}
-            title=$s(2)
-            link=$s(3)
-            description=`{cat $s(5) | $formatter }
+        for (file in $filenames) {
+            nrexp='filename = '''^$file^'''';
+            
+            newdate=`{/usr/bin/date -R -d `{recsel -t Metadata -e $nrexp -P date $metadatadb}}
+            title=`{recsel -t Metadata -e $nrexp -P title $metadatadb}
+            link=`{echo $file | sed 's|sites/|https://|g;s|.md||g;s|.tpl||g;s|.html||g;'}
+            description=`{cat $file | $formatter }
 %}
         <item>
             <title>%($title%)</title>
             <author>risingthumb@risingthumb.xyz (Aaron Leonard)</author>
-            <link>https://risingthumb.xyz/Writing/Blog/%($link%)</link>
-            <guid isPermaLink="true">https://risingthumb.xyz/Writing/Blog/%($link%)</guid>
+            <link>%($link%)</link>
+            <guid isPermaLink="true">%($link%)</guid>
             <pubDate>%($newdate%)</pubDate>
             <description><![CDATA[<html><head></head><body>%($description%)</body></html>]]></description>
         </item>
 %{
 
         }
-        ifs=$oldifs;
 %}
     </channel>
 </rss>

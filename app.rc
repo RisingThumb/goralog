@@ -45,7 +45,7 @@ fn goralog_init {
     # Maybe should match against top level?
     # Maybe shouldn't. Can symbolically link documents into category folders and generic index.rss this way for categories
     if (~ $req_path */index.rss) {
-        goralog_setup_feed_handlers rss20.tpl 'text/xml; charset=utf-8'
+        goralog_setup_feed_handlers rss202.tpl 'text/xml; charset=utf-8'
     }
 }
 
