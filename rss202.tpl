@@ -29,7 +29,8 @@ lbddate=`{recsel -t Metadata -e $recexpr -S date -P date $metadatadb | tac | hea
             newdate=`{/usr/bin/date -R -d `{recsel -t Metadata -e $nrexp -P date $metadatadb}}
             title=`{recsel -t Metadata -e $nrexp -P title $metadatadb}
             link=`{echo $file | sed 's|sites/|https://|g;s|.md||g;s|.tpl||g;s|.html||g;'}
-            description=`{cat $file | $formatter }
+            description=`{recsel -t Metadata -e $nrexp -P description $metadatadb}
+            content=`{cat $file | /usr/bin/sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' -e 's/>/\&gt;/g' -e 's/"/\&quot;/g' -e 's/\&lt;!---/<!---/g' -e 's/---\&gt;/--->/g' | $formatter }
 %}
         <item>
             <title>%($title%)</title>
@@ -37,7 +38,7 @@ lbddate=`{recsel -t Metadata -e $recexpr -S date -P date $metadatadb | tac | hea
             <link>%($link%)</link>
             <guid isPermaLink="true">%($link%)</guid>
             <pubDate>%($newdate%)</pubDate>
-            <description><![CDATA[<html><head></head><body>%($description%)</body></html>]]></description>
+            <description><![CDATA[<head></head><body>%($content%)</body>]]></description>
         </item>
 %{
 
