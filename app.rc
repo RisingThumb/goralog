@@ -22,6 +22,11 @@ fn goralog_init {
         if (~ $req_path $dirUsed^'/new_post' && ! ~ $#editor_mode 0) {
             handler_body_main=( tpl_handler `{get_lib_file goralog/new_post.tpl apps/goralog/new_post.tpl} )
             if (~ $REQUEST_METHOD POST) {
+                post_arg_body=`{cat /tmp/$post_arg_body | dos2unix}
+                post_arg_title=`{cat /tmp/$post_arg_title | dos2unix}
+                post_arg_description=`{cat /tmp/$post_arg_description | dos2unix}
+                post_arg_filename=`{cat /tmp/$post_arg_filename | dos2unix}
+                post_arg_date=`{cat /tmp/$post_arg_date | dos2unix}
                 if(mkbpost $"post_arg_body $"post_arg_date $"post_arg_title $"post_arg_description $"post_arg_filename)
                     post_redirect $dirUsed
                 if not
@@ -44,8 +49,11 @@ fn goralog_init {
     # Not smart. Only matches against end of url. Technically a blog post/index.rss matches too
     # Maybe should match against top level?
     # Maybe shouldn't. Can symbolically link documents into category folders and generic index.rss this way for categories
+    #if (~ $req_path */index.rss) {
+    #    goralog_setup_feed_handlers rss202.tpl 'text/xml; charset=utf-8'
+    #}
     if (~ $req_path */index.rss) {
-        goralog_setup_feed_handlers rss202.tpl 'text/xml; charset=utf-8'
+        goralog_setup_feed_handlers rss203.tpl 'text/xml; charset=utf-8'
     }
 }
 
@@ -104,7 +112,7 @@ fn mkbpost {
     if (test -f $sitedir$dirUsed/$"bpfilename)
        _status=($_status 'This filename has been used before, use a different one!')
     if (! ~ $"bpdate [0-9][0-9][0-9][0-9]/[0-9][0-9]/[0-9][0-9]) {
-       _status=($_status 'Invalid date. Check format. '^$bpdate)
+       _status=($_status 'Invalid date. Check format. '^$"bpdate)
     }
     bpfilename=$bpfilename.md
     if (~ $#_status 0) {
