@@ -22,7 +22,7 @@ fn goralog_init {
         if (~ $req_path $dirUsed^'/new_post' && ! ~ $#editor_mode 0) {
             handler_body_main=( tpl_handler `{get_lib_file goralog/new_post.tpl apps/goralog/new_post.tpl} )
             if (~ $REQUEST_METHOD POST) {
-                post_arg_body=`{cat /tmp/$post_arg_body | dos2unix}
+                #post_arg_body=`{cat /tmp/$post_arg_body | dos2unix}
                 post_arg_title=`{cat /tmp/$post_arg_title | dos2unix}
                 post_arg_description=`{cat /tmp/$post_arg_description | dos2unix}
                 post_arg_filename=`{cat /tmp/$post_arg_filename | dos2unix}
@@ -89,10 +89,8 @@ fn mkbpost {
     bpdescription=`{echo $4 | sed 's/''/''''/g'};
 
     # Need to clean filename of bad chars
-    bpfilename=`{echo $5 | sed 's:/:_:g' | sed 's:\0:_:g'};
+    bpfilename=`{echo $5 | sed 's:/:_:g'};
 
-    if (~ $"bptext '')
-       _status=($_status 'You need to provide a post body.')
     if (~ $"bptitle '')
        _status=($_status 'You need to provide a post title.')
     if (~ $"bpdescription '')
@@ -121,8 +119,8 @@ title='^$bptitle^'
 date='^$bpdate^'
 description='^$bpdescription^'
 goralog_base_dir='^$dirUsed^'
---->
-'^$bptext > $sitedir$dirUsed/$bpfilename
+--->' > $sitedir$dirUsed/$bpfilename
+cat /tmp/$1 | dos2unix >> $sitedir$dirUsed/$bpfilename
         prepare_metadata $sitedir$dirUsed/$bpfilename
 # Need to sort out creating the files
     }
