@@ -1,3 +1,10 @@
+# Config settings:
+## conf_blog_editors
+## conf_blog_title
+## conf_enable_goralog
+## conf_goralog_sort_field
+## conf_goralog_sort_reverse
+
 fn conf_enable_goralog {
     enable_goralog=yes
     conf_enable_app goralog
@@ -5,6 +12,10 @@ fn conf_enable_goralog {
         conf_blog_editors=blog-editors
     if(~ $"conf_blog_title '')
         conf_blog_title='Blog'
+    if(~ $"conf_goralog_sort_field '')
+        conf_goralog_sort_field='date'
+    if(~ $"conf_template_file '')
+        conf_template_file='apps/goralog/template.templ'
 }
 
 fn goralog_init {
@@ -41,7 +52,12 @@ fn goralog_init {
             recexpr='goralog_base_dir = '''^$dirUsed^''''
             stats=`{recsel -t Metadata -e $recexpr -c $metadatadb}
             echo '<div style="text-align:right;">(<a href="index.rss">RSS Feed</a>)</div><h1 class="goralog-dir-list-title">'$"conf_blog_title'</h1><p>Proudly featuring '$stats' posts!</p><ul class="goralog-dir-list">'
-            a=`{recsel -t Metadata -e $recexpr -S date -p description,title,filename,date $metadatadb | tac | sed 's|sites/|https://|g;s|.md||g;s|.tpl||g;s|.html||g' | recfmt -f apps/goralog/template.templ}
+            if (~ $"conf_reverse '') {
+                a=`{recsel -t Metadata -e $recexpr -S $"conf_goralog_sort_field -p description,title,filename,date $metadatadb | tac | sed 's|sites/|https://|g;s|.md||g;s|.tpl||g;s|.html||g' | recfmt -f $"conf_template_file}
+            }
+            if not {
+                a=`{recsel -t Metadata -e $recexpr -S $"conf_goralog_sort_field -p description,title,filename,date $metadatadb | sed 's|sites/|https://|g;s|.md||g;s|.tpl||g;s|.html||g' | recfmt -f $"conf_template_file}
+            }
             echo $a;
             echo '</ul>'
         }
@@ -85,7 +101,8 @@ fn goralog_setup_feed_handlers {
 fn mkbpost {
     bptext=$1;
     bpdate=`{echo $2 | sed 's/''/''''/g'};
-    bptitle=`{echo $3 | sed 's/''/''''/g'};
+    #bptitle=`{echo $3 | sed 's/''/''''/g'};
+    bptitle=$3;
     bpdescription=`{echo $4 | sed 's/''/''''/g'};
 
     # Need to clean filename of bad chars
