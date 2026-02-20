@@ -100,7 +100,7 @@ fn goralog_setup_feed_handlers {
 
 fn mkbpost {
     bptext=$1;
-    bpdate=`{echo $2 | sed 's/''/''''/g'};
+    bpdate=`{echo $2 | sed 's|-|/|g' | sed 's/''/''''/g'};
     #bptitle=`{echo $3 | sed 's/''/''''/g'};
     bptitle=$3;
     bpdescription=`{echo $4 | sed 's/''/''''/g'};
